@@ -23,3 +23,14 @@ class Expense:
 
         self.total_cost = float(self.total_cost)
         self.group_name = ExpenseGroups(self.group_name)
+
+    def to_csv (self) -> None:
+        return {
+            "name": self.name,
+            "qnt": self.qnt,
+            "unt_cost": self.unt_cost,
+            "total_cost": self.total_cost,
+            "group_name": self.group_name.value,
+            "auto_expense": self.auto_expense,
+            "created_at": self.created_at.strftime("%d/%m/%Y"),
+        }

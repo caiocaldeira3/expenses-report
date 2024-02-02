@@ -1,10 +1,11 @@
-google-cloud-documents
+google-cloud-documentai
 google-cloud-storage
 google-cloud-documentai-toolbox
 google-generativeai
 google-api-python-client
 google-auth-httplib2
 google-auth-oauthlib
-python-dotenv==1.0.0
+python-dotenv==1.0.1
 img2pdf==0.5.1
 python-magic==0.4.27
+matplotlib==3.8.2

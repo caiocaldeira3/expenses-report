@@ -5,6 +5,7 @@ BASE_PATH = Path(__file__).parent.parent
 ROOT_PATH = BASE_PATH
 EXPENSES_PATH = ROOT_PATH / "expenses"
 PROFILE_PATH = ROOT_PATH / "profile"
+GRAPHS_PATH = PROFILE_PATH / "report-graphs"
 
 import dotenv
 

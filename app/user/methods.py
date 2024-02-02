@@ -24,11 +24,11 @@ def create_profile (
     user = Profile(name, expenses_group, expected_expenses)
 
     with open(config.PROFILE_PATH / "profile.json", "w") as profile_file:
-        json.dump(user.__dict__, profile_file)
+        json.dump(user.__dict__, profile_file, indent=4)
 
     with open(config.PROFILE_PATH / "expenses-report.csv", "w") as report_file:
         report_file.write(
-            ",".join( field.name for field in dc.fields(Expense) if field.init )
+            ",".join( field.name for field in dc.fields(Expense) if field.init ) + "\n"
         )
 
     return user
