@@ -1,5 +1,4 @@
 import json
-from collections.abc import Iterable
 from pathlib import Path
 
 import google.generativeai as genai
@@ -10,6 +9,7 @@ from google.api_core.client_options import ClientOptions
 from google.cloud import documentai as doai
 
 from app import config
+from app.parsing.structs import Expense
 from app.user.structs import Profile
 
 
@@ -55,11 +55,13 @@ genai.configure(api_key=config.GEMINI_API_KEY)
 model = genai.GenerativeModel("gemini-pro")
 REMOVE_WEB_CHARACTERS = re.compile(r"`|\n|json")
 
-def discriminate_expenses (expense_ocr: str, user: Profile) -> str:
+def discriminate_expenses (
+    expense_ocr: str, user: Profile
+) -> dict[str, list[Expense]]:
     response = model.generate_content(
         "Discriminate between the given expenses groups:" +
         "\n".join(
-            f" * {group}" for group in user.expenses_groups
+            f" * {group.value}" for group in user.expenses_groups
         ) + "\n" +
         "As a json file that follows this structure:\n" +
         """
@@ -82,7 +84,13 @@ def discriminate_expenses (expense_ocr: str, user: Profile) -> str:
     )
 
     try:
-        return json.loads(parsed_text)
+        js_resp: dict[str, list[dict[str, str | float]]] = json.loads(parsed_text)
+
+        return {
+            group_name: [
+                Expense(**exp) for exp in js_resp[group_name]
+            ] for group_name in js_resp.keys()
+        }
 
     except json.JSONDecodeError:
         print("it was not possible to load parsed response as json")
@@ -90,8 +98,8 @@ def discriminate_expenses (expense_ocr: str, user: Profile) -> str:
 
         return parsed_text
 
-def parse_expense (file_name: str, groups: Iterable[str]) -> None:
+def parse_expense (file_name: str, user: Profile) -> None:
     file_content = get_pdf_file(file_name)
     file_ocr = get_file_ocr(file_content)
 
-    return discriminate_expenses(file_ocr, groups)
+    return discriminate_expenses(file_ocr, user)

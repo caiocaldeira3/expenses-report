@@ -5,7 +5,7 @@ from enum import Enum
 
 class Expenses (str, Enum):
     GROCERIES: str = "groceries"
-    UTILITIES: str = "utilities"
+    UTILITIES: str = "utility-bills"
     HYGIENE: str = "hygiene"
     GAMES: str = "games"
     UBER: str = "uber"
