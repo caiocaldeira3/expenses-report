@@ -1,4 +1,5 @@
 import dataclasses as dc
+from datetime import datetime
 
 from app.user.structs import ExpenseGroups
 
@@ -10,6 +11,8 @@ class Expense:
     unt_cost: float | None
     total_cost: float
     group_name: ExpenseGroups
+    auto_expense: bool
+    created_at: datetime
 
     def __post_init__ (self) -> None:
         if self.qnt is not None:

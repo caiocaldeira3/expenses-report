@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from pathlib import Path
 
 import google.generativeai as genai
@@ -89,11 +90,22 @@ def discriminate_expenses (
     try:
         js_resp: list[dict[str, str | float]] = json.loads(parsed_text)
 
-        return [ Expense(**exp) for exp in js_resp ], response
+        return [
+            Expense(
+                auto_expense=True,
+                created_at=datetime.now(),
+                **exp
+            ) for exp in js_resp
+        ], response
 
     except json.JSONDecodeError:
         print("it was not possible to load parsed response as json")
         print(parsed_text)
+
+        return parsed_text, response
+
+    except Exception:
+        print("generic exception")
 
         return parsed_text, response
 
