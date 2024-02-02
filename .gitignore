@@ -4,3 +4,5 @@ expenses/
 profile/
 
 **/__pycache__/
+
+service.env
