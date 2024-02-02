@@ -1,5 +1,7 @@
 import dataclasses as dc
 
+from app.user.structs import ExpenseGroups
+
 
 @dc.dataclass()
 class Expense:
@@ -7,6 +9,7 @@ class Expense:
     qnt: int | None
     unt_cost: float | None
     total_cost: float
+    group_name: ExpenseGroups
 
     def __post_init__ (self) -> None:
         if self.qnt is not None:
@@ -15,5 +18,5 @@ class Expense:
         if self.unt_cost is not None:
             self.unt_cost = float(self.unt_cost)
 
-        if self.total_cost is not None:
-            self.total_cost = float(self.total_cost)
+        self.total_cost = float(self.total_cost)
+        self.group_name = ExpenseGroups(self.group_name)

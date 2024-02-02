@@ -3,7 +3,7 @@ import os
 from collections.abc import Iterable
 
 from app import config
-from app.user.structs import Expenses, Profile
+from app.user.structs import ExpenseGroups, Profile
 
 
 def load_profile () -> Profile | None:
@@ -16,7 +16,7 @@ def load_profile () -> Profile | None:
     return user
 
 def create_profile (
-    name: str = "usr", expenses_group: Iterable[Expenses] = list(Expenses),
+    name: str = "usr", expenses_group: Iterable[ExpenseGroups] = list(ExpenseGroups),
     expected_expenses: float | None = None
 ) -> Profile:
     user = Profile(name, expenses_group, expected_expenses)
@@ -34,7 +34,7 @@ def ensure_profile () -> None:
         username = input("choose username: ") or "usr"
         groups = (
             input("choose expenses group: [empty for default] ")
-            or list(Expenses)
+            or list(ExpenseGroups)
         )
         expected_expenses = input("expected monthly expenses: ") or None
 

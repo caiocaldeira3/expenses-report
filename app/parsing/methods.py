@@ -54,27 +54,27 @@ genai.configure(api_key=config.GEMINI_API_KEY)
 
 model = genai.GenerativeModel("gemini-pro")
 REMOVE_WEB_CHARACTERS = re.compile(r"`|\n|json")
+REPLACE_CURRENCY_COMMA_FOR_DOT = re.compile(r"([0-9]+),([0-9]+)")
 
 def discriminate_expenses (
     expense_ocr: str, user: Profile
 ) -> dict[str, list[Expense]]:
     response = model.generate_content(
-        "Discriminate between the given expenses groups:" +
+        "Discriminate the following billing items between the given expenses groups:" +
         "\n".join(
             f" * {group.value}" for group in user.expenses_groups
         ) + "\n" +
         "As a json file that follows this structure:\n" +
         """
-        {
-            "group_name": [
-                {
-                    "name":         the item name,
-                    "qnt":          the item quantity none if undecidable,
-                    "unt_cost":     the item unity cost, none if undecidable,
-                    "total_cost":   the item total cost
-                }
-            ] ...
-        }
+        [
+            {
+                "name":         the item name,
+                "qnt":          the item quantity none if undecidable,
+                "unt_cost":     the item unity cost, none if undecidable,
+                "total_cost":   the item total cost,
+                "group_name":   the item group name
+            }
+        ] ...
         """ +
         expense_ocr
     )
@@ -82,21 +82,20 @@ def discriminate_expenses (
     parsed_text = REMOVE_WEB_CHARACTERS.sub(
         "", response.candidates[0].content.parts[0].text
     )
+    parsed_text = REPLACE_CURRENCY_COMMA_FOR_DOT.sub(
+        r"\g<1>.\g<2>", parsed_text
+    )
 
     try:
-        js_resp: dict[str, list[dict[str, str | float]]] = json.loads(parsed_text)
+        js_resp: list[dict[str, str | float]] = json.loads(parsed_text)
 
-        return {
-            group_name: [
-                Expense(**exp) for exp in js_resp[group_name]
-            ] for group_name in js_resp.keys()
-        }
+        return [ Expense(**exp) for exp in js_resp ], response
 
     except json.JSONDecodeError:
         print("it was not possible to load parsed response as json")
         print(parsed_text)
 
-        return parsed_text
+        return parsed_text, response
 
 def parse_expense (file_name: str, user: Profile) -> None:
     file_content = get_pdf_file(file_name)

@@ -3,19 +3,16 @@ from collections.abc import Iterable
 from enum import Enum
 
 
-class Expenses (str, Enum):
+class ExpenseGroups (str, Enum):
     GROCERIES: str = "groceries"
-    UTILITIES: str = "utility-bills"
     HYGIENE: str = "hygiene"
     GAMES: str = "games"
-    UBER: str = "uber"
-    IFOOD: str = "ifood"
     EXTRAS: str = "extras"
 
 @dc.dataclass()
 class Profile:
     name: str
-    expenses_groups: Iterable[Expenses]
+    expenses_groups: Iterable[ExpenseGroups]
     expected_expenses: float | None
     temporary_expenses: bool = dc.field(default=False)
 
@@ -24,5 +21,5 @@ class Profile:
             self.expected_expenses = float(self.expected_expenses)
 
         self.expenses_groups = [
-            Expenses(exp) for exp in self.expenses_groups
+            ExpenseGroups(exp) for exp in self.expenses_groups
         ]
