@@ -1,0 +1,6 @@
+venv/
+google-secrets/
+expenses/
+profile/
+
+**/__pycache__/
