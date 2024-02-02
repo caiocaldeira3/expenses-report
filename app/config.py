@@ -4,7 +4,6 @@ from pathlib import Path
 BASE_PATH = Path(__file__).parent.parent
 ROOT_PATH = BASE_PATH
 EXPENSES_PATH = ROOT_PATH / "expenses"
-PDFS_PATH = ROOT_PATH / "pdf-expenses"
 PROFILE_PATH = ROOT_PATH / "profile"
 
 import dotenv

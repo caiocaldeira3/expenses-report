@@ -1,8 +1,10 @@
+import dataclasses as dc
 import json
 import os
 from collections.abc import Iterable
 
 from app import config
+from app.parsing.structs import Expense
 from app.user.structs import ExpenseGroups, Profile
 
 
@@ -24,13 +26,24 @@ def create_profile (
     with open(config.PROFILE_PATH / "profile.json", "w") as profile_file:
         json.dump(user.__dict__, profile_file)
 
+    with open(config.PROFILE_PATH / "expenses-report.csv", "w") as report_file:
+        report_file.write(
+            ",".join( field.name for field in dc.fields(Expense) if field.init )
+        )
+
     return user
 
 def ensure_profile () -> None:
     try:
         return load_profile()
 
-    except ValueError:
+    except Exception:
+        if not os.path.exists(config.PROFILE_PATH):
+            os.makedirs(config.PROFILE_PATH)
+
+        if not os.path.exists(config.EXPENSES_PATH):
+            os.makedirs(config.EXPENSES_PATH)
+
         username = input("choose username: ") or "usr"
         groups = (
             input("choose expenses group: [empty for default] ")
